@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+
+<title>Dashboard</title>
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body class="bg-light" data-total-scrapes="{{ total_scrapes|default(0)|tojson }}" data-total-links="{{ total_links|default(0)|tojson }}">
+    <div class="sidebar">
+
+<h3>Universal Scraper</h3>
+
+<a href="/dashboard">
+🏠 Dashboard
+</a>
+
+<a href="/history">
+📜 History
+</a>
+
+<a href="/profile">
+👤 My Profile
+</a>
+
+<a href="/admin">
+    👑 Admin
+</a>
+
+<a href="/export/csv">
+📄 Export CSV
+</a>
+
+<a href="/export/excel">
+📊 Export Excel
+</a>
+
+<a href="/export/json">
+📦 Export JSON
+</a>
+
+<a href="/logout">
+🚪 Logout
+</a>
+
+</div>
+
+<div class="main">
+    <nav class="navbar navbar-dark bg-dark shadow">
+    <div class="container-fluid">
+
+        <span class="navbar-brand">
+            <i class="bi bi-globe2"></i>
+            Universal Web Scraping Dashboard
+        </span>
+
+        <div>
+            <span class="text-white me-3">
+                Welcome, {{ session['name'] }}
+            </span>
+
+            <a href="/logout" class="btn btn-danger btn-sm">
+                Logout
+            </a>
+
+            <button onclick="darkMode()"
+            class="btn btn-dark">
+
+            🌙 Dark Mode
+
+            </button>
+        </div>
+
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<h2>
+Welcome {{ session['name'] }}
+</h2>
+
+<hr>
+
+
+<h4>
+Universal Web Scraping Dashboard
+</h4>
+
+<hr>
+
+<h4>Universal Website Scraper</h4>
+
+<div class="row mb-4">
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow border-0 bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="bi bi-database fs-1"></i>
+                <h5>Total Scrapes</h5>
+                <h2>{{ total_scrapes }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow border-0 bg-success text-white">
+            <div class="card-body text-center">
+                <i class="bi bi-link-45deg fs-1"></i>
+                <h5>Total Links</h5>
+                <h2>{{ total_links }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow border-0 bg-warning text-dark">
+            <div class="card-body text-center">
+                <i class="bi bi-image fs-1"></i>
+                <h5>Total Images</h5>
+                <h2>{{ total_images }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow border-0 bg-danger text-white">
+            <div class="card-body text-center">
+                <i class="bi bi-envelope fs-1"></i>
+                <h5>Total Emails</h5>
+                <h2>{{ total_emails }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<form method="POST" action="/scrape">
+
+<div class="mb-3">
+
+<label>Website URL</label>
+
+<input
+type="url"
+name="url"
+class="form-control"
+placeholder="https://example.com"
+required>
+
+</div>
+
+<button class="btn btn-primary w-100">
+    <i class="bi bi-search"></i>
+
+Start Scraping
+
+</button>
+</form>
+
+<div class="mt-4">
+
+    <a href="/export/csv" class="btn btn-success">
+        Export CSV
+    </a>
+
+    <a href="/export/excel" class="btn btn-primary">
+        Export Excel
+    </a>
+
+    <a href="/export/json" class="btn btn-dark">
+        Export JSON
+    </a>
+
+</div>
+
+<hr>
+
+<!-- ✅ CHART SECTION -->
+<div class="card mt-4 shadow">
+    <div class="card-body">
+        <h4 class="text-center">Dashboard Analytics</h4>
+        <div style="width:500px; height:250px; margin:auto;">
+        <canvas id="myChart" data-chart='{{ [total_scrapes|default(0), total_links|default(0), total_images|default(0), total_emails|default(0)] | tojson }}'></canvas>
+        </div>
+    </div>
+</div>
+
+
+
+{% if scraped_data %}
+
+<hr>
+
+<h3>Scraping Result</h3>
+
+<div class="card shadow mt-3">
+
+<div class="card-body">
+
+<h4>{{ scraped_data.title }}</h4>
+
+<p>{{ scraped_data.description }}</p>
+
+<hr>
+
+<p><b>Total Links :</b> {{ scraped_data.total_links }}</p>
+
+<p><b>Total Images :</b> {{ scraped_data.total_images }}</p>
+
+<p><b>Total Headings :</b> {{ scraped_data.total_headings }}</p>
+
+<p><b>Total Emails :</b> {{ scraped_data.total_emails }}</p>
+
+<p><b>Total Phones :</b> {{ scraped_data.total_phones }}</p>
+
+</div>
+
+</div>
+
+{% endif %}
+
+<a href="/history" class="btn btn-warning">
+View Scraping History
+</a>
+
+<a href="/logout"
+class="btn btn-danger mt-3">
+
+Logout
+
+</a>
+
+<div class="mt-4">
+
+    <a href="/export/csv" class="btn btn-success">
+        <i class="bi bi-filetype-csv"></i>
+        CSV
+    </a>
+
+    <a href="/export/excel" class="btn btn-primary">
+        <i class="bi bi-file-earmark-excel"></i>
+        Excel
+    </a>
+
+    <a href="/export/json" class="btn btn-dark">
+        <i class="bi bi-filetype-json"></i>
+        JSON
+    </a>
+
+    <a href="/history" class="btn btn-warning">
+        <i class="bi bi-clock-history"></i>
+        History
+    </a>
+
+</div>
+
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+console.log("Chart =", typeof Chart);
+console.log("Canvas =", document.getElementById("myChart"));
+// Debug: scrapes and links logged via template variables removed to avoid parse errors
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const canvas = document.getElementById("myChart");
+    if (!canvas) {
+        console.warn('myChart canvas not found');
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    let chartData = [0,0,0,0];
+    try {
+        if (canvas.dataset && canvas.dataset.chart) {
+            chartData = JSON.parse(canvas.dataset.chart);
+        }
+    } catch (e) {
+        console.warn('Invalid chart data, using defaults', e);
+    }
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Scrapes", "Links", "Images", "Emails"],
+            datasets: [{
+                label: "Statistics",
+                data: chartData,
+                backgroundColor: [
+                    "#0d6efd",
+                    "#198754",
+                    "#ffc107",
+                    "#dc3545"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+    }
+    });
+});
+</script>
+</div>
+
+<footer class="text-center mt-5">
+
+<hr>
+
+<p>
+
+© 2026 Universal Web Scraping Dashboard
+
+Made by Anjali Singh
+
+</p>
+
+</footer>
+
+</body>
+
+</html>
+
